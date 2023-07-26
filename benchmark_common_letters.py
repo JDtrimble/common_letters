@@ -9,7 +9,7 @@ class UnknownPlatformError(Exception):
     def __repr__(self):
         return "If you have encountered this exception, you are using os, that is not supported"
 
-input_str = "apple\npeach\n"
+input_str = "abcdef\nbcdefg\ncdefgh\ndefghi\nefghij\nfghijk\n"
 
 def benchmark_python():
     if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
@@ -102,22 +102,65 @@ def benchmark_r():
     time_of_execution = end - start
     return output.strip(), time_of_execution
 
-if __name__ == "__main__":
-    python_output, python_time = benchmark_python()
-    cpp_output, cpp_time = benchmark_cpp()
-    rust_output, rust_time = benchmark_rust()
-    c_output, c_time = benchmark_c()
-    java_output, java_time = benchmark_java()
-    go_output, go_time = benchmark_go()
-    r_output, r_time = benchmark_r()
+def benchmark_pascal():
+    if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+        cmd = ['./common_letters_pascal']
+    elif sys.platform.startswith("win") or sys.platform.startswith("win"):
+        cmd = ['.\common_letters_pascal']
+    else:
+        print(sys.platform)
+        raise UnknownPlatformError
+    start = time.time()
+    process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
+    output, _ = process.communicate(input=input_str)
+    end = time.time()
+    time_of_execution = end - start
+    return output.strip(), time_of_execution
 
-    print(f"Java time:\t{java_time:.6f} seconds")
-    print(f"Python time:\t{python_time:.6f} seconds")
-    print(f"Go time:\t{go_time:.6f} seconds")
-    print(f"C++ time:\t{cpp_time:.6f} seconds")
-    print(f"Rust time:\t{rust_time:.6f} seconds")
-    print(f"C time:   \t{c_time:.6f} seconds")
-    print(f"R time:   \t{r_time:.6f} seconds")
+if __name__ == "__main__":
+    final_python = 0
+    final_cpp = 0
+    final_rust = 0
+    final_c = 0
+    final_java = 0
+    final_go = 0
+    final_r = 0
+    final_pascal = 0
+    for i in range(100):
+        python_output, python_time = benchmark_python()
+        cpp_output, cpp_time = benchmark_cpp()
+        rust_output, rust_time = benchmark_rust()
+        c_output, c_time = benchmark_c()
+        java_output, java_time = benchmark_java()
+        go_output, go_time = benchmark_go()
+        r_output, r_time = benchmark_r()
+        pascal_output, pascal_time = benchmark_pascal()
+        
+        final_python += python_time
+        final_cpp += cpp_time
+        final_rust += rust_time
+        final_c += c_time
+        final_java += java_time
+        final_go += go_time
+        final_r += r_time
+        final_pascal += pascal_time
+    final_python /= 100
+    final_cpp /= 100
+    final_rust /= 100
+    final_c /= 100
+    final_java /= 100
+    final_go /= 100
+    final_r /= 100
+    final_pascal /= 100
+
+    print(f"R time:   \t{final_r:.6f} seconds")
+    print(f"Java time:\t{final_java:.6f} seconds")
+    print(f"Python time:\t{final_python:.6f} seconds")
+    print(f"Go time:\t{final_go:.6f} seconds")
+    print(f"C++ time:\t{final_cpp:.6f} seconds")
+    print(f"Pascal time:\t{final_pascal:.6f} seconds")
+    print(f"Rust time:\t{final_rust:.6f} seconds")
+    print(f"C time:   \t{final_c:.6f} seconds")
     print()
     print(f"python output:\t{python_output}")
     print(f"c++ output:\t{cpp_output}")
@@ -126,14 +169,4 @@ if __name__ == "__main__":
     print(f"java output:\t{java_output}")
     print(f"go output:\t{go_output}")
     print(f"r output:\t{r_output}")
-    print()
-    print(f"java is faster than r in {(r_time / java_time):.6f} times")
-    print(f"python is faster than java in {(java_time / python_time):.6f} times")
-    print(f"c++ is faster than python in {(python_time / cpp_time):.6f} times")
-    print(f"go is faster than python in {(python_time / go_time):.6f} times")
-    if go_time < cpp_time:
-        print(f"go is faster than c++ in {(cpp_time/go_time):.6f} times")
-    else:
-        print(f"c++ is faster than go in {(go_time/cpp_time):.6f} times")
-    print(f"rust is faster than c++ in {(cpp_time/rust_time):.6f} times")
-    print(f"c is faster than rust in {(rust_time/c_time):.6f} times")
+    print(f"pascal output:\t{pascal_output}")
