@@ -1,10 +1,24 @@
 import subprocess
 import time
+import sys
+
+class UnknownPlatformError(Exception):
+    def __init__(self):
+        super().__init__()
+
+    def __repr__(self):
+        return "If you have encountered this exception, you are using os, that is not supported"
 
 input_str = "apple\npeach\n"
 
 def benchmark_python():
-    cmd = ['python3', 'common_letters.py']
+    if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+        cmd = ['python3', 'common_letters.py']
+    elif sys.platform.startswith("win"):
+        cmd = ['python', 'common_letters.py']
+    else:
+        print()
+        raise UnknownPlatformError
     start = time.time()
     process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
     output, _ = process.communicate(input=input_str)
@@ -13,7 +27,12 @@ def benchmark_python():
     return output.strip(), time_of_execution
 
 def benchmark_cpp():
-    cmd = ['./common_letters_cpp']
+    if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+        cmd = ['./common_letters_cpp']
+    elif sys.platform.startswith("win") or sys.platform.startswith("win"):
+        cmd = ['.\common_letters_cpp']
+    else:
+        raise UnknownPlatformError
     start = time.time()
     process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
     output, _ = process.communicate(input=input_str)
@@ -22,7 +41,12 @@ def benchmark_cpp():
     return output.strip(), time_of_execution
 
 def benchmark_rust():
-    cmd = ['./common_letters_rust']
+    if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+        cmd = ['./common_letters_rust']
+    elif sys.platform.startswith("win") or sys.platform.startswith("win"):
+        cmd = ['.\common_letters_rust']
+    else:
+        raise UnknownPlatformError
     start = time.time()
     process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
     output, _ = process.communicate(input=input_str)
@@ -31,7 +55,13 @@ def benchmark_rust():
     return output.strip(), time_of_execution
 
 def benchmark_c():
-    cmd = ['./common_letters_c']
+    if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+        cmd = ['./common_letters_c']
+    elif sys.platform.startswith("win") or sys.platform.startswith("win"):
+        cmd = ['.\common_letters_c']
+    else:
+        print(sys.platform)
+        raise UnknownPlatformError
     start = time.time()
     process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
     output, _ = process.communicate(input=input_str)
